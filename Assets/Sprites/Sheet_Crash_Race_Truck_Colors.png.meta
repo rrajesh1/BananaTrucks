@@ -117,6 +117,19 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -309,7 +322,15 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Sheet_Crash_Race_Truck_Colors_0: -7850570396369752790
+      Sheet_Crash_Race_Truck_Colors_1: -1698388141722376868
+      Sheet_Crash_Race_Truck_Colors_2: 188409739632611478
+      Sheet_Crash_Race_Truck_Colors_3: -5707311154575194145
+      Sheet_Crash_Race_Truck_Colors_4: 5245783105091319017
+      Sheet_Crash_Race_Truck_Colors_5: -3117267188159500626
+      Sheet_Crash_Race_Truck_Colors_6: -6810868061375984281
+      Sheet_Crash_Race_Truck_Colors_7: 8988270656096014350
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
