@@ -132,6 +132,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 3
   playerNumber: 1
+  collisionPrefab: {fileID: 0}
+  spawnAreaMin: {x: 0, y: 0}
+  spawnAreaMax: {x: 0, y: 0}
+  bananaPrefab: {fileID: 0}
+  pauseSecond: 3
 --- !u!60 &-7322751271931178771
 PolygonCollider2D:
   m_ObjectHideFlags: 0

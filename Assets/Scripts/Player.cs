@@ -1,10 +1,11 @@
 using UnityEngine;
+using System.Collections;
 
 public class Player : MonoBehaviour
 {
     public int speed = 10;
     public float playerNumber;
-    Rigidbody2D myrb2d; 
+    Rigidbody2D myrb2d;
     private KeyCode lastKey;
 
     public GameObject collisionPrefab;
@@ -13,10 +14,15 @@ public class Player : MonoBehaviour
     public Vector2 spawnAreaMax;
     public GameObject bananaPrefab;
 
+    public float pauseSecond = 3f;
+
+    private SpriteRenderer spriteRenderer;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         myrb2d = GetComponent<Rigidbody2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     // Update is called once per frame
@@ -25,16 +31,16 @@ public class Player : MonoBehaviour
         KeyCode[] controls;
         if (playerNumber == 1)
         {
-            controls = new [] { KeyCode.LeftArrow, KeyCode.RightArrow, KeyCode.UpArrow, KeyCode.DownArrow };
+            controls = new[] { KeyCode.LeftArrow, KeyCode.RightArrow, KeyCode.UpArrow, KeyCode.DownArrow };
         }
         else
         {
-            controls = new [] { KeyCode.A, KeyCode.D, KeyCode.W, KeyCode.S };
+            controls = new[] { KeyCode.A, KeyCode.D, KeyCode.W, KeyCode.S };
         }
         faceDirection(controls);
     }
 
-     // order left, right, up, down
+    // order left, right, up, down
     private void faceDirection(KeyCode[] controls)
     {
         Vector2 move = myrb2d.linearVelocity.normalized;
@@ -65,12 +71,12 @@ public class Player : MonoBehaviour
             lastKey = controls[3];
         }
 
-	    float leftRight = Input.GetAxis("Horizontal");
+        float leftRight = Input.GetAxis("Horizontal");
         float rotationSpeed = 200f;
-	    transform.Rotate(0, 0, -leftRight * rotationSpeed * Time.deltaTime);
+        transform.Rotate(0, 0, -leftRight * rotationSpeed * Time.deltaTime);
 
-        
-        myrb2d.linearVelocity = move * speed;  
+
+        myrb2d.linearVelocity = move * speed;
     }
 
     // Handle collision events
@@ -82,8 +88,13 @@ public class Player : MonoBehaviour
             HandleBananaCollision(collision);
         }
 
+        else if (collision.gameObject.CompareTag("PeeledBanana"))
+        {
+            StartCoroutine(BlinkAndPause());
+        }
+
         // Check if the car collided with another car
-        else if (collision.gameObject.CompareTag("Player")) 
+        else if (collision.gameObject.CompareTag("Player"))
         {
             HandleCarCollision(collision);
         }
@@ -142,5 +153,19 @@ public class Player : MonoBehaviour
         Debug.Log("New banana spawned at: " + randomPosition);
     }
 
+    private IEnumerator BlinkAndPause()
+    {
+        for(int i = 0; i < 6; i++)
+        {
+            spriteRenderer.enabled = !spriteRenderer.enabled;
+            yield return new WaitForSeconds(0.25f);
+
+        }
+        spriteRenderer.enabled = true;
+
+        Time.timeScale = 0f;
+        yield return new WaitForSecondsRealtime(pauseSecond);
+        Time.timeScale = 1f; 
+    }
+
 }
-        
