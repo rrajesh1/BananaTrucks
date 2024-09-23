@@ -58,26 +58,11 @@ public class Player : MonoBehaviour
             lastKey = controls[3];
         }
 
-        // if (Vector2.SqrMagnitude(move) == 0f)
-        // {
-    
-        //     if (lastKey == controls[0])
-        //     {
-        //         spriteRenderer.sprite = side_sprites[0];
-        //         spriteRenderer.flipX = true;
-        //     }
-        //     else if (lastKey == controls[1])
-        //     {
-        //         spriteRenderer.sprite = side_sprites[0];
-        //     }
-        //     else if (lastKey == controls[2])
-        //     {
-        //         spriteRenderer.sprite = up_sprites[0];
-        //     }
-        //     else if (lastKey == controls[3])
-        //     {
-        //         spriteRenderer.sprite = down_sprites[0];
-        //     }
+	    float leftRight = Input.GetAxis("Horizontal");
+        float rotationSpeed = 200f;
+	    transform.Rotate(0, 0, -leftRight * rotationSpeed * Time.deltaTime);
+
+        
         myrb2d.linearVelocity = move * speed;  
         }
 

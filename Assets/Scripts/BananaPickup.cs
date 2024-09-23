@@ -13,7 +13,7 @@ public class BananaPickup : MonoBehaviour
             other.transform.SetParent(transform);
             other.transform.localPosition = new Vector3(0.5f, 0, -1f);
             Banana = other.gameObject;
-            
+            // TODO update player score         
         } 
 
     }
