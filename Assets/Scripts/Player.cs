@@ -139,6 +139,19 @@ public class Player : MonoBehaviour
 
     }
 
+    private void HandlePeeledBananaCollision(Collision2D collision)
+    {
+        if(playerNumber == 1)
+        {
+            ScoreManager.player1AddScore(-1);
+        }
+        else if(playerNumber == 2)
+        {
+            ScoreManager.player2AddScore(-1);
+        }
+        Destroy(collision.gameObject);
+    }
+
     // Spawn a new banana in a random position within the spawn area
     private void SpawnNewBanana()
     {
