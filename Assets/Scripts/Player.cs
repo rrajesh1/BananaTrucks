@@ -3,8 +3,8 @@ using System.Collections;
 
 public class Player : MonoBehaviour
 {
-    public float moveSpeed = 5f;     // Speed of forward/backward movement
-    public float rotationSpeed = 30f; // Speed of rotation
+    public float moveSpeed = 3f;     // Speed of forward/backward movement
+    public float rotationSpeed = 200f; // Speed of rotation
 
     public float playerNumber;
     Rigidbody2D myrb2d;

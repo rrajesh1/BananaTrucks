@@ -30,8 +30,8 @@ Transform:
   m_GameObject: {fileID: 3514472864837075569}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.436928, y: 3.893967, z: 0}
-  m_LocalScale: {x: 0.693, y: 0.4415, z: 1}
+  m_LocalPosition: {x: -7.0293, y: 2.596, z: 0}
+  m_LocalScale: {x: 0.55342984, y: 0.283443, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -83,7 +83,7 @@ SpriteRenderer:
   m_Sprite: {fileID: 8988270656096014350, guid: 2dd421dd03c68431c80f3e69434cd8af, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
-  m_FlipY: 1
+  m_FlipY: 0
   m_DrawMode: 0
   m_Size: {x: 1.31, y: 3.47}
   m_AdaptiveModeThreshold: 0.5
@@ -105,7 +105,7 @@ Rigidbody2D:
   m_UseAutoMass: 0
   m_Mass: 1
   m_LinearDamping: 0
-  m_AngularDamping: 0.05
+  m_AngularDamping: 0.1
   m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -114,10 +114,10 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 4
+  m_Constraints: 0
 --- !u!114 &7872843521513834506
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -130,9 +130,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69d2d4208e64d4c5887ea9818d2f55a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 3
+  moveSpeed: 5
+  rotationSpeed: 100
   playerNumber: 1
-  collisionPrefab: {fileID: 0}
+  collisionPrefab: {fileID: 1696455591030756304, guid: 03fdd243c92a54b72a332b52fb201bca, type: 3}
   spawnAreaMin: {x: 0, y: 0}
   spawnAreaMax: {x: 0, y: 0}
   bananaPrefab: {fileID: 0}
