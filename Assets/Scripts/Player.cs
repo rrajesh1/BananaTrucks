@@ -3,7 +3,9 @@ using System.Collections;
 
 public class Player : MonoBehaviour
 {
-    public int speed = 10;
+    public float moveSpeed = 5f;     // Speed of forward/backward movement
+    public float rotationSpeed = 30f; // Speed of rotation
+
     public float playerNumber;
     Rigidbody2D myrb2d;
     private KeyCode lastKey;
@@ -28,56 +30,61 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        KeyCode[] controls;
-        if (playerNumber == 1)
-        {
-            controls = new[] { KeyCode.LeftArrow, KeyCode.RightArrow, KeyCode.UpArrow, KeyCode.DownArrow };
+        Vector3 dir = transform.up;
+        float rotationInput;
+        if (playerNumber == 1){
+            rotationInput = -1*Input.GetAxis("Horizontal1");
         }
-        else
-        {
-            controls = new[] { KeyCode.A, KeyCode.D, KeyCode.W, KeyCode.S };
+        else {
+            rotationInput = -1*Input.GetAxis("Horizontal2");
         }
-        faceDirection(controls);
+        //float rotationInput = -1*Input.GetAxis("Horizontal" + playerNumber); //between -1 and 1
+        float angle = rotationInput * rotationSpeed * Time.deltaTime;
+        Quaternion rotationQ = Quaternion.AngleAxis(angle, Vector3.forward);
+        dir = rotationQ * dir;
+        myrb2d.linearVelocity = dir * moveSpeed;
+        transform.up = dir;
+
     }
 
-    // order left, right, up, down
-    private void faceDirection(KeyCode[] controls)
-    {
-        Vector2 move = myrb2d.linearVelocity.normalized;
-        if (Input.GetKey(controls[0]))
-        {
-            // animate(side_sprites);
-            // spriteRenderer.flipX = true;
-            move.x = -1;
-            lastKey = controls[0];
-        }
-        else if (Input.GetKey(controls[1]))
-        {
-            // animate(side_sprites);
-            // spriteRenderer.flipX = false;
-            move.x = 1;
-            lastKey = controls[1];
-        }
-        else if (Input.GetKey(controls[2]))
-        {
-            // animate(up_sprites);
-            move.y = 1;
-            lastKey = controls[2];
-        }
-        else if (Input.GetKey(controls[3]))
-        {
-            //animate(down_sprites);
-            move.y = -1;
-            lastKey = controls[3];
-        }
+    // // order left, right, up, down
+    // private void faceDirection(KeyCode[] controls)
+    // {
+    //     Vector2 move = myrb2d.linearVelocity.normalized;
+    //     if (Input.GetKey(controls[0]))
+    //     {
+    //         // animate(side_sprites);
+    //         // spriteRenderer.flipX = true;
+    //         move.x = -1;
+    //         lastKey = controls[0];
+    //     }
+    //     else if (Input.GetKey(controls[1]))
+    //     {
+    //         // animate(side_sprites);
+    //         // spriteRenderer.flipX = false;
+    //         move.x = 1;
+    //         lastKey = controls[1];
+    //     }
+    //     else if (Input.GetKey(controls[2]))
+    //     {
+    //         // animate(up_sprites);
+    //         move.y = 1;
+    //         lastKey = controls[2];
+    //     }
+    //     else if (Input.GetKey(controls[3]))
+    //     {
+    //         //animate(down_sprites);
+    //         move.y = -1;
+    //         lastKey = controls[3];
+    //     }
 
-        float leftRight = Input.GetAxis("Horizontal");
-        float rotationSpeed = 200f;
-        transform.Rotate(0, 0, -leftRight * rotationSpeed * Time.deltaTime);
+    //     float leftRight = Input.GetAxis("Horizontal");
+    //     float rotationSpeed = 200f;
+    //     transform.Rotate(0, 0, -leftRight * rotationSpeed * Time.deltaTime);
 
 
-        myrb2d.linearVelocity = move * speed;
-    }
+    //     myrb2d.linearVelocity = move * speed;
+    // }
 
     // Handle collision events
     private void OnCollisionEnter2D(Collision2D collision)
@@ -90,6 +97,7 @@ public class Player : MonoBehaviour
 
         else if (collision.gameObject.CompareTag("PeeledBanana"))
         {
+            HandlePeeledBananaCollision(collision);
             StartCoroutine(BlinkAndPause());
         }
 
@@ -144,12 +152,15 @@ public class Player : MonoBehaviour
         if(playerNumber == 1)
         {
             ScoreManager.player1AddScore(-1);
+            Destroy(collision.gameObject);
+
         }
         else if(playerNumber == 2)
         {
             ScoreManager.player2AddScore(-1);
+            Destroy(collision.gameObject);
         }
-        Destroy(collision.gameObject);
+        
     }
 
     // Spawn a new banana in a random position within the spawn area
