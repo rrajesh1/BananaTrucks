@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 6465832305536309892}
   - component: {fileID: 7872843521513834506}
   - component: {fileID: -7322751271931178771}
-  - component: {fileID: -8684166394334634097}
   m_Layer: 0
   m_Name: Player1
   m_TagString: Player
@@ -116,7 +115,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 1
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 0
 --- !u!114 &7872843521513834506
 MonoBehaviour:
@@ -130,14 +129,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69d2d4208e64d4c5887ea9818d2f55a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 5
-  rotationSpeed: 100
+  moveSpeed: 8
+  rotationSpeed: 400
   playerNumber: 1
   collisionPrefab: {fileID: 1696455591030756304, guid: 03fdd243c92a54b72a332b52fb201bca, type: 3}
-  spawnAreaMin: {x: 0, y: 0}
-  spawnAreaMax: {x: 0, y: 0}
-  bananaPrefab: {fileID: 0}
-  pauseSecond: 3
+  bananaPrefab: {fileID: 8291266271225295911, guid: dbebbf3314f774a90a5e6d75f1f01ae3, type: 3}
+  spawnAreaMin: {x: -5, y: -5}
+  spawnAreaMax: {x: 5, y: 5}
 --- !u!60 &-7322751271931178771
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -229,15 +227,3 @@ PolygonCollider2D:
       - {x: 0.565, y: -1.625}
       - {x: 0.575, y: -1.275}
   m_UseDelaunayMesh: 0
---- !u!114 &-8684166394334634097
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3514472864837075569}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 316ece08444994152a950aeed192613e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
