@@ -1,37 +1,60 @@
-// using UnityEngine;
-// using UnityEngine.UI;
-// using System.Collections;
+using System.Collections;
+using TMPro;
+using UnityEngine;
 
-// public class CountdownTimer : MonoBehaviour
-// {
-//     public static int countdownTime = 60f;
-//     // private int currentTime;
+public class CountdownTimer : MonoBehaviour
+{
+    public int timer = 60;  // Countdown starting time in seconds
+    public TMP_Text timer_text;  // Reference to the TextMeshProUGUI text component
 
-//     public TMP_Text timerText;
+    private void Start()
+    {
+        // Start the countdown coroutine
+        StartCoroutine(CountdownCoroutine());
+    }
 
-//     void Start()
-//     {
-//         currentTime = countdownTime;
-//         StartCoroutine(StartCountdown());
-//     }
+    // Coroutine to handle the countdown logic
+    IEnumerator CountdownCoroutine()
+    {
+        while (timer > 0)
+        {
+            // Update the UI each second
+            UpdateUI();
 
-//     IEnumerator StartCountdown()
-//     {
-//         while (currentTime > 0)
-//         {
-//             timerText.text = "Time: " + currentTime.ToString("0");
-//             yield return new WaitForSeconds(1f);
-//             currentTime--;
-//         }
+            // Wait for 1 second
+            yield return new WaitForSeconds(1f);
 
-//         // timerText.text = "Time: 0";
-//         // TimerEnded();  // Call TimerEnded when time is up
-//     }
+            // Decrease the timer by 1
+            timer--;
+        }
 
-//     // This is the TimerEnded method that is getting duplicated
-//     // void TimerEnded()
-//     // {
-//     //     Debug.Log("Timer has ended!");
-//     //     // Add logic here for when the timer ends
-//     // }
-// }
+        // Ensure the timer hits 0 and updates the UI when the countdown is finished
+        timer = 0;
+        UpdateUI();
+
+        int player1Score = ScoreManager.getPlayer1Score();
+        int player2Score = ScoreManager.getPlayer2Score();
+
+        if (player1Score > player2Score)
+        {
+            Debug.Log("Player 1 won!");
+        }
+        else if (player1Score < player2Score)
+        {
+            Debug.Log("Player 2 won!");
+        }
+        else
+        {
+            Debug.Log("Player 1 and Player 2 tied!");
+        }
+
+        Debug.Log("Timer has finished!");
+        // Optional: Trigger any event when the timer ends
+    }
+
+    // Method to update the UI text
+    private void UpdateUI()
+    {
+        timer_text.text = timer.ToString();
+    }
+}

@@ -32,6 +32,16 @@ public class ScoreManager : MonoBehaviour
         instance.UpdateUI();
     }
 
+    public static int getPlayer1Score()
+    {
+        return player1Score;
+    }
+
+    public static int getPlayer2Score()
+    {
+        return player2Score;
+    }
+
     private void UpdateUI()
     {
         player1_ui_text.text = player1Score.ToString();

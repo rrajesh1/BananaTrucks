@@ -93,7 +93,7 @@ public class Player : MonoBehaviour
         else if (collision.gameObject.CompareTag("PeeledBanana"))
         {
            HandlePeeledBananaCollision(collision);
-           StartCoroutine(BlinkAndPause());
+           //StartCoroutine(BlinkAndPause());
         }
         // Check if player collides with another player
         else if (collision.gameObject.CompareTag("Player"))
