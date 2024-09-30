@@ -130,8 +130,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69d2d4208e64d4c5887ea9818d2f55a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 5
-  rotationSpeed: 100
+  moveSpeed: 8
+  rotationSpeed: 300
   playerNumber: 1
   collisionPrefab: {fileID: 1696455591030756304, guid: 03fdd243c92a54b72a332b52fb201bca, type: 3}
   spawnAreaMin: {x: 0, y: 0}

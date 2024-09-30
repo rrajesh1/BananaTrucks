@@ -30,6 +30,11 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        HandleMovement();
+    }
+
+    void HandleMovement()
+    {
         Vector3 dir = transform.up;
         float rotationInput;
         if (playerNumber == 1){
@@ -44,47 +49,7 @@ public class Player : MonoBehaviour
         dir = rotationQ * dir;
         myrb2d.linearVelocity = dir * moveSpeed;
         transform.up = dir;
-
     }
-
-    // // order left, right, up, down
-    // private void faceDirection(KeyCode[] controls)
-    // {
-    //     Vector2 move = myrb2d.linearVelocity.normalized;
-    //     if (Input.GetKey(controls[0]))
-    //     {
-    //         // animate(side_sprites);
-    //         // spriteRenderer.flipX = true;
-    //         move.x = -1;
-    //         lastKey = controls[0];
-    //     }
-    //     else if (Input.GetKey(controls[1]))
-    //     {
-    //         // animate(side_sprites);
-    //         // spriteRenderer.flipX = false;
-    //         move.x = 1;
-    //         lastKey = controls[1];
-    //     }
-    //     else if (Input.GetKey(controls[2]))
-    //     {
-    //         // animate(up_sprites);
-    //         move.y = 1;
-    //         lastKey = controls[2];
-    //     }
-    //     else if (Input.GetKey(controls[3]))
-    //     {
-    //         //animate(down_sprites);
-    //         move.y = -1;
-    //         lastKey = controls[3];
-    //     }
-
-    //     float leftRight = Input.GetAxis("Horizontal");
-    //     float rotationSpeed = 200f;
-    //     transform.Rotate(0, 0, -leftRight * rotationSpeed * Time.deltaTime);
-
-
-    //     myrb2d.linearVelocity = move * speed;
-    // }
 
     // Handle collision events
     private void OnCollisionEnter2D(Collision2D collision)
@@ -98,12 +63,13 @@ public class Player : MonoBehaviour
         else if (collision.gameObject.CompareTag("PeeledBanana"))
         {
             HandlePeeledBananaCollision(collision);
-            StartCoroutine(BlinkAndPause());
+            //StartCoroutine(BlinkAndPause());
         }
 
         // Check if the car collided with another car
         else if (collision.gameObject.CompareTag("Player"))
         {
+            Debug.Log("Car collision");
             HandleCarCollision(collision);
         }
     }
@@ -111,14 +77,16 @@ public class Player : MonoBehaviour
     // Handle car-to-car collisions
     private void HandleCarCollision(Collision2D collision)
     {
-        // Get the contact point of the collision
-        ContactPoint2D contact = collision.GetContact(0);
-        Vector3 collisionPosition = contact.point;
+        float bounceForce = 50f;
+        Rigidbody2D otherRb = collision.gameObject.GetComponent<Rigidbody2D>();
 
-        // Instantiate the collision prefab at the contact point
-        Instantiate(collisionPrefab, collisionPosition, Quaternion.identity);
+        // Convert positions to Vector2 and calculate the bounce direction
+        Vector2 bounceDirection = myrb2d.position - (Vector2)collision.transform.position;
+        bounceDirection.Normalize();
 
-        Debug.Log("Cars collided! Collision prefab instantiated.");
+        // Apply force to both objects in opposite directions
+        myrb2d.AddForce(bounceDirection * bounceForce, ForceMode2D.Impulse);
+        otherRb.AddForce(-bounceDirection * bounceForce, ForceMode2D.Impulse);
     }
 
     // Handle car-to-banana collisions
@@ -172,8 +140,8 @@ public class Player : MonoBehaviour
         Vector2 randomPosition = new Vector2(randomX, randomY);
 
         // Instantiate the new banana prefab at the random position
-        Instantiate(bananaPrefab, randomPosition, Quaternion.identity);
-
+        GameObject newBanana = Instantiate(bananaPrefab, randomPosition, Quaternion.identity);
+        newBanana.SetActive(true);
         Debug.Log("New banana spawned at: " + randomPosition);
     }
 
