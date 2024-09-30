@@ -87,6 +87,9 @@ public class Player : MonoBehaviour
         // Apply force to both objects in opposite directions
         myrb2d.AddForce(bounceDirection * bounceForce, ForceMode2D.Impulse);
         otherRb.AddForce(-bounceDirection * bounceForce, ForceMode2D.Impulse);
+
+        Vector3 collisionPosition = collision.GetContact(0).point;
+        Instantiate(collisionPrefab, collisionPosition, Quaternion.identity);
     }
 
     // Handle car-to-banana collisions
@@ -117,6 +120,7 @@ public class Player : MonoBehaviour
 
     private void HandlePeeledBananaCollision(Collision2D collision)
     {
+        Debug.Log("Peeled banana collision");
         if(playerNumber == 1)
         {
             ScoreManager.player1AddScore(-1);
