@@ -22,9 +22,10 @@ public class Player : MonoBehaviour
 
     enum state {
         driving = 1,
-        spinning = 2, 
-        collided = 3, 
+        spinning = 2
     }
+
+    bool collided = false;
 
     private state playerState = state.driving;
 
@@ -48,18 +49,22 @@ public class Player : MonoBehaviour
                 HandleMovement();
                 break;
         }
+       // HandleSpin();
         
         
     }
 
     void HandleSpin()
     {
-        float timer = 3f;
-        Vector3 speed = new Vector3(0, 100, 0);
+        float timer = 10f;
+        Vector3 speed = new Vector3(0, 0, 50);
         while (timer > 0f) {
             Debug.Log("got here");
             transform.Rotate(speed*Time.deltaTime);
             timer -= Time.deltaTime;
+            Quaternion deltaRotation = Quaternion.Euler(speed * Time.fixedDeltaTime);
+            //myrb2d.MoveRotation(myrb2d.rotation + 50f*Time.deltaTime);
+
         }
         playerState = state.driving; 
     }
@@ -101,7 +106,7 @@ public class Player : MonoBehaviour
         else if (collision.gameObject.CompareTag("Player"))
         {
             //Debug.Log("Car collision");
-            if (playerState != state.collided)
+            if (collided != true)
             {
                 HandleCarCollision(collision);
             }
@@ -133,7 +138,7 @@ public class Player : MonoBehaviour
         // myrb2d.AddForce(bounceDirection * bounceForce, ForceMode2D.Impulse);
         // otherRb.AddForce(-bounceDirection * bounceForce, ForceMode2D.Impulse);
         
-        playerState = state.collided;
+        collided = true;
         Vector3 collisionPosition = collision.GetContact(0).point;
         // Instantiate(collisionPrefab, collisionPosition, Quaternion.identity);
 
@@ -147,7 +152,7 @@ public class Player : MonoBehaviour
     {
         yield return new WaitForSeconds(0.5f);
         Instantiate(collisionPrefab, position, Quaternion.identity);
-        playerState = state.driving;
+        collided = false;
     }
 
     // Handle car-to-banana collisions
