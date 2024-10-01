@@ -20,6 +20,14 @@ public class Player : MonoBehaviour
 
     private SpriteRenderer spriteRenderer;
 
+    enum state {
+        driving = 1,
+        spinning = 2, 
+        collided = 3, 
+    }
+
+    private state playerState = state.driving;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -30,7 +38,30 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        HandleMovement();
+        switch(playerState) 
+        {
+            case state.spinning:
+                Debug.Log("spinning");
+                HandleSpin();
+                break;
+            default:
+                HandleMovement();
+                break;
+        }
+        
+        
+    }
+
+    void HandleSpin()
+    {
+        float timer = 3f;
+        Vector3 speed = new Vector3(0, 100, 0);
+        while (timer > 0f) {
+            Debug.Log("got here");
+            transform.Rotate(speed*Time.deltaTime);
+            timer -= Time.deltaTime;
+        }
+        playerState = state.driving; 
     }
 
     void HandleMovement()
@@ -60,36 +91,63 @@ public class Player : MonoBehaviour
             HandleBananaCollision(collision);
         }
 
-        else if (collision.gameObject.CompareTag("PeeledBanana"))
+        // else if (collision.gameObject.CompareTag("PeeledBanana"))
+        // {
+        //     HandlePeeledBananaCollision(collision);
+        //     //StartCoroutine(BlinkAndPause());
+        // }
+
+        // Check if the car collided with another car
+        else if (collision.gameObject.CompareTag("Player"))
+        {
+            //Debug.Log("Car collision");
+            if (playerState != state.collided)
+            {
+                HandleCarCollision(collision);
+            }
+            
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("PeeledBanana"))
         {
             HandlePeeledBananaCollision(collision);
             //StartCoroutine(BlinkAndPause());
         }
 
-        // Check if the car collided with another car
-        else if (collision.gameObject.CompareTag("Player"))
-        {
-            Debug.Log("Car collision");
-            HandleCarCollision(collision);
-        }
     }
 
     // Handle car-to-car collisions
     private void HandleCarCollision(Collision2D collision)
     {
-        float bounceForce = 50f;
-        Rigidbody2D otherRb = collision.gameObject.GetComponent<Rigidbody2D>();
+        // float bounceForce = 50f;
+        // Rigidbody2D otherRb = collision.gameObject.GetComponent<Rigidbody2D>();
 
-        // Convert positions to Vector2 and calculate the bounce direction
-        Vector2 bounceDirection = myrb2d.position - (Vector2)collision.transform.position;
-        bounceDirection.Normalize();
+        // // Convert positions to Vector2 and calculate the bounce direction
+        // Vector2 bounceDirection = myrb2d.position - (Vector2)collision.transform.position;
+        // bounceDirection.Normalize();
 
-        // Apply force to both objects in opposite directions
-        myrb2d.AddForce(bounceDirection * bounceForce, ForceMode2D.Impulse);
-        otherRb.AddForce(-bounceDirection * bounceForce, ForceMode2D.Impulse);
-
+        // // Apply force to both objects in opposite directions
+        // myrb2d.AddForce(bounceDirection * bounceForce, ForceMode2D.Impulse);
+        // otherRb.AddForce(-bounceDirection * bounceForce, ForceMode2D.Impulse);
+        
+        playerState = state.collided;
         Vector3 collisionPosition = collision.GetContact(0).point;
-        Instantiate(collisionPrefab, collisionPosition, Quaternion.identity);
+        // Instantiate(collisionPrefab, collisionPosition, Quaternion.identity);
+
+        
+        // Instantiate(collisionPrefab, collisionPosition, Quaternion.identity);
+        StartCoroutine(spawnPeel(collisionPosition, collisionPrefab));
+        Debug.Log("Cars collided! Banana peel spawned.");
+    }
+
+    private IEnumerator spawnPeel(Vector3 position, GameObject collisionPrefab) 
+    {
+        yield return new WaitForSeconds(0.5f);
+        Instantiate(collisionPrefab, position, Quaternion.identity);
+        playerState = state.driving;
     }
 
     // Handle car-to-banana collisions
@@ -118,25 +176,27 @@ public class Player : MonoBehaviour
 
     }
 
-    private void HandlePeeledBananaCollision(Collision2D collision)
+    private void HandlePeeledBananaCollision(Collider2D collision)
     {
         Debug.Log("Peeled banana collision");
-        if(playerNumber == 1)
+        if (playerNumber == 1)
         {
-            ScoreManager.player1AddScore(-1);
+            //ScoreManager.player1AddScore(-1);
+            playerState = state.spinning;
             Destroy(collision.gameObject);
 
         }
         else if(playerNumber == 2)
         {
-            ScoreManager.player2AddScore(-1);
+            //ScoreManager.player2AddScore(-1);
+            playerState = state.spinning;
             Destroy(collision.gameObject);
         }
         
     }
 
     // Spawn a new banana in a random position within the spawn area
-    private void SpawnNewBanana()
+    void SpawnNewBanana()
     {
         // Generate a random X and Y position within the defined spawn area
         float randomX = Random.Range(spawnAreaMin.x, spawnAreaMax.x);
@@ -149,7 +209,7 @@ public class Player : MonoBehaviour
         Debug.Log("New banana spawned at: " + randomPosition);
     }
 
-    private IEnumerator BlinkAndPause()
+   IEnumerator BlinkAndPause()
     {
         for(int i = 0; i < 6; i++)
         {
