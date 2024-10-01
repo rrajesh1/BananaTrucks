@@ -7,11 +7,14 @@ public class Player : MonoBehaviour
     public float rotationSpeed = 400f;
     public int playerNumber; // Change to int for easier comparison
     Rigidbody2D myrb2d;
+    public LayerMask mask;
 
     enum state {
         driving = 0,
-a        spinning = 1
+        spinning = 1
     }
+
+    bool collided = false;
     private state playerState = state.driving;
 
     public GameObject collisionPrefab; // Banana peel prefab to spawn on collision
@@ -30,49 +33,71 @@ a        spinning = 1
 
     private void Update()
     {
-        // Rotation
-        float rotationInput = (playerNumber == 1) ? -Input.GetAxis("Horizontal1") : -Input.GetAxis("Horizontal2");
-        float angle = rotationInput * rotationSpeed * Time.deltaTime;
-
-        Quaternion rotationQ = Quaternion.AngleAxis(angle, Vector3.forward);
-        Vector3 dir = rotationQ * transform.up;
-
-        myrb2d.linearVelocity = dir * moveSpeed;
-        transform.up = dir;
+        switch(playerState)
+        {
+            case state.spinning:
+                HandleSpin();
+                break;
+            case state.driving:
+                HandleMovement();
+                break;      
+        }
     }
 
     void FixedUpdate()
     {
         // Setting of the velocity (only setting the velocity right before the physics resolve collision-- not every frame)
-        myrb2d.linearVelocity = transform.up * moveSpeed;
-
-    }
-
-    private IEnumerator BlinkAndPause()
-    {
-        for (int i = 0; i < 6; i++)
+        switch(playerState)
         {
-            spriteRenderer.enabled = !spriteRenderer.enabled;
-            yield return new WaitForSeconds(3f);
+            // TODO add what the rigidbody change should be for spinning
+            default:
+                myrb2d.linearVelocity = transform.up * moveSpeed;
+                break;
 
         }
-        spriteRenderer.enabled = true;
 
-        Time.timeScale = 0f;
-        yield return new WaitForSecondsRealtime(pauseSecond);
-        Time.timeScale = 1f;
     }
 
+    private void HandleMovement()
+    {
+        Vector3 dir = transform.up;
+        float rotationInput;
+        if (playerNumber == 1){
+            rotationInput = -1*Input.GetAxis("Horizontal1");
+        }
+        else {
+            rotationInput = -1*Input.GetAxis("Horizontal2");
+        }
+        float angle = rotationInput * rotationSpeed * Time.deltaTime;
+        Quaternion rotationQ = Quaternion.AngleAxis(angle, Vector3.forward);
+        dir = rotationQ * dir;
+        transform.up = dir;
+    }
 
-    // Collision handling
-    // void OnTriggerEnter2D(Collision2D collision)
-    // {
-    //     if (collision.gameObject.CompareTag("PeeledBanana"))
-    //     {
-    //         HandlePeeledBananaCollision(collision);
-    //     }
+    private void HandleSpin()
+    {
+        float timer = 10f;
+        Vector3 speed = new Vector3(0, 0, 50);
+        while (timer > 0f) {
+            Debug.Log("got here");
+            transform.Rotate(speed*Time.deltaTime);
+            timer -= Time.deltaTime;
+            //Quaternion deltaRotation = Quaternion.Euler(speed * Time.fixedDeltaTime);
+            //myrb2d.MoveRotation(myrb2d.rotation + 50f*Time.deltaTime);
 
-    // }
+        }
+        playerState = state.driving;
+    }
+
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("PeeledBanana"))
+        {
+            HandlePeeledBananaCollision(collision);
+        }
+
+    }
+
     void OnCollisionEnter2D(Collision2D collision)
     {
         // Check if player collides with a banana
@@ -81,18 +106,13 @@ a        spinning = 1
             HandleBananaCollision(collision);
         }
 
-        else if (collision.gameObject.CompareTag("PeeledBanana"))
-        {
-            Debug.Log("Collided with peeled banana");
-            HandlePeeledBananaCollision(collision);
-            //StartCoroutine(BlinkAndPause());
-        }
-
         // Check if player collides with another player
         else if (collision.gameObject.CompareTag("Player"))
         {
-            StartCoroutine(HandleCarCollision(collision));
-            // HandleCarCollision(collision);
+            if (collided != true)
+            {
+                HandleCarCollision(collision);
+            }
         }
     }
 
@@ -116,7 +136,7 @@ a        spinning = 1
         SpawnNewBanana();
     }
 
-    private void HandlePeeledBananaCollision(Collision2D collision)
+    private void HandlePeeledBananaCollision(Collider2D collision)
     {
         if (playerNumber == 1)
         {
@@ -133,26 +153,44 @@ a        spinning = 1
     }
 
     // Handle player-to-player collision (spawns banana peel or collision object)
-    IEnumerator  HandleCarCollision(Collision2D collision)
+    private void HandleCarCollision(Collision2D collision)
     {
+        collided = true;
         Vector3 collisionPosition = collision.GetContact(0).point;
-        // Wait for 3 seconds
-        yield return new WaitForSeconds(3f);
-        
-        Instantiate(collisionPrefab, collisionPosition, Quaternion.identity);
+        StartCoroutine(spawnPeel(collisionPosition, collisionPrefab));
         Debug.Log("Cars collided! Banana peel spawned.");
+    }
+
+    private IEnumerator spawnPeel(Vector3 position, GameObject collisionPrefab) 
+    {
+        yield return new WaitForSeconds(2f);
+        Instantiate(collisionPrefab, position, Quaternion.identity);
+        collided = false;
     }
 
     // Spawn a new banana at a random position
     public void SpawnNewBanana()
     {
+        Vector3 horizontalOffset = new Vector3(0, 0.1f, 0);
+        Vector3 verticalOffset = new Vector3(0.1f, 0, 0);
+
+        float distance = Vector3.Magnitude(2 * verticalOffset);
+        RaycastHit2D hit1 = Physics2D.Raycast(transform.position - verticalOffset, new Vector2(0, 1), 1f, mask);
+        RaycastHit2D hit2 = Physics2D.Raycast(transform.position - horizontalOffset, new Vector2(1, 0), 1f, mask);
+    
         float randomX = Random.Range(spawnAreaMin.x, spawnAreaMax.x);
         float randomY = Random.Range(spawnAreaMin.y, spawnAreaMax.y);
         Vector2 randomPosition = new Vector2(randomX, randomY);
 
         //Instantiate(bananaPrefab, randomPosition, Quaternion.identity);
-        GameObject newBanana = Instantiate(bananaPrefab, randomPosition, Quaternion.identity);
-        newBanana.SetActive(true);  // Ensure the new banana is active
+        //GameObject newBanana = Instantiate(bananaPrefab, randomPosition, Quaternion.identity);
+
+        if (hit1.collider == null && hit2.collider == null)
+        {
+            GameObject newBanana = Instantiate(bananaPrefab, randomPosition, Quaternion.identity);
+            newBanana.SetActive(true);
+        }
+          // Ensure the new banana is active
         Debug.Log("New banana spawned at: " + randomPosition);
     }
 }
