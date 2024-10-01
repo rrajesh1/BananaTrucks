@@ -8,6 +8,12 @@ public class Player : MonoBehaviour
     public int playerNumber; // Change to int for easier comparison
     Rigidbody2D myrb2d;
 
+    enum state {
+        driving = 0,
+a        spinning = 1
+    }
+    private state playerState = state.driving;
+
     public GameObject collisionPrefab; // Banana peel prefab to spawn on collision
     public GameObject bananaPrefab;    // Banana prefab to spawn after pickup
     public Vector2 spawnAreaMin;       // Spawn area bounds for banana
@@ -59,6 +65,14 @@ public class Player : MonoBehaviour
 
 
     // Collision handling
+    // void OnTriggerEnter2D(Collision2D collision)
+    // {
+    //     if (collision.gameObject.CompareTag("PeeledBanana"))
+    //     {
+    //         HandlePeeledBananaCollision(collision);
+    //     }
+
+    // }
     void OnCollisionEnter2D(Collision2D collision)
     {
         // Check if player collides with a banana
@@ -69,6 +83,7 @@ public class Player : MonoBehaviour
 
         else if (collision.gameObject.CompareTag("PeeledBanana"))
         {
+            Debug.Log("Collided with peeled banana");
             HandlePeeledBananaCollision(collision);
             //StartCoroutine(BlinkAndPause());
         }
@@ -76,7 +91,8 @@ public class Player : MonoBehaviour
         // Check if player collides with another player
         else if (collision.gameObject.CompareTag("Player"))
         {
-            HandleCarCollision(collision);
+            StartCoroutine(HandleCarCollision(collision));
+            // HandleCarCollision(collision);
         }
     }
 
@@ -117,9 +133,12 @@ public class Player : MonoBehaviour
     }
 
     // Handle player-to-player collision (spawns banana peel or collision object)
-    void HandleCarCollision(Collision2D collision)
+    IEnumerator  HandleCarCollision(Collision2D collision)
     {
         Vector3 collisionPosition = collision.GetContact(0).point;
+        // Wait for 3 seconds
+        yield return new WaitForSeconds(3f);
+        
         Instantiate(collisionPrefab, collisionPosition, Quaternion.identity);
         Debug.Log("Cars collided! Banana peel spawned.");
     }
