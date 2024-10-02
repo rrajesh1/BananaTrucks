@@ -24,11 +24,24 @@ public class Player : MonoBehaviour
     public float pauseSecond = 3f;
 
     private SpriteRenderer spriteRenderer;
+    private AudioSource engineSound;
+    private AudioSource collisionSound;
+    private AudioSource bananaCollisionSound;
+    private AudioSource peeledbananaCollisionSound;
 
     void Start()
     {
         myrb2d = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+
+        //engineSound = GetComponent<AudioSource>();
+        AudioSource[] audioSources = GetComponents<AudioSource>();
+        engineSound = audioSources[0]; // Assume the first one is the engine sound
+        collisionSound = audioSources[1]; // The second one is the collision sound
+        bananaCollisionSound = audioSources[2];
+        peeledbananaCollisionSound = audioSources[3];
+
+
     }
 
     private void Update()
@@ -68,10 +81,33 @@ public class Player : MonoBehaviour
         else {
             rotationInput = -1*Input.GetAxis("Horizontal2");
         }
+
+        PlayEngineSound();
+
         float angle = rotationInput * rotationSpeed * Time.deltaTime;
         Quaternion rotationQ = Quaternion.AngleAxis(angle, Vector3.forward);
         dir = rotationQ * dir;
         transform.up = dir;
+    }
+
+    private void PlayEngineSound()
+    {
+        if (Input.GetAxis("Horizontal1") != 0 || Input.GetAxis("Horizontal2") != 0)
+        {
+            // If the engine sound is not playing, start it
+            if (!engineSound.isPlaying)
+            {
+                engineSound.Play();
+            }
+        }
+        else
+        {
+            // If no input is detected and the engine sound is still playing, stop it
+            if (engineSound.isPlaying)
+            {
+                engineSound.Stop();
+            }
+        }
     }
 
     private void HandleSpin()
@@ -119,6 +155,12 @@ public class Player : MonoBehaviour
     // Handle banana pickup, score update, and banana respawn
     void HandleBananaCollision(Collision2D collision)
     {
+        //play banana collision sound
+        if (!bananaCollisionSound.isPlaying)
+        {
+            bananaCollisionSound.Play();
+        }
+
         // Check which player picked up the banana and update their score
         if (playerNumber == 1)
         {
@@ -138,6 +180,13 @@ public class Player : MonoBehaviour
 
     private void HandlePeeledBananaCollision(Collider2D collision)
     {
+        //playe peeled banana collision sound
+        if (!peeledbananaCollisionSound.isPlaying)
+        {
+            peeledbananaCollisionSound.Play();
+        }
+
+        //check if player collides with peeled banana and update their score
         if (playerNumber == 1)
         {
             ScoreManager.player1AddScore(-1);
@@ -157,6 +206,13 @@ public class Player : MonoBehaviour
     {
         collided = true;
         Vector3 collisionPosition = collision.GetContact(0).point;
+
+        //Play the collision sound
+        if (!collisionSound.isPlaying)
+        {
+            collisionSound.Play();
+        }
+
         StartCoroutine(spawnPeel(collisionPosition, collisionPrefab));
         Debug.Log("Cars collided! Banana peel spawned.");
     }

@@ -9,6 +9,8 @@ public class CountdownTimer : MonoBehaviour
     public GameObject player1_win_text;
     public GameObject player2_win_text;
     public GameObject tie_text;
+    public AudioSource winSound;
+    public AudioSource tieSound;
 
     private void Start()
     {
@@ -41,16 +43,19 @@ public class CountdownTimer : MonoBehaviour
         if (player1Score > player2Score)
         {
             Instantiate(player1_win_text, new Vector3(0, 0, 0), Quaternion.identity);
+            winSound.Play();
             Debug.Log("Player 1 won!");
         }
         else if (player1Score < player2Score)
         {
             Instantiate(player2_win_text, new Vector3(0, 0, 0), Quaternion.identity);
+            winSound.Play();
             Debug.Log("Player 2 won!");
         }
         else
         {
             Instantiate(tie_text, new Vector3(0, 0, 0), Quaternion.identity);
+            tieSound.Play();
             Debug.Log("Player 1 and Player 2 tied!");
         }
 

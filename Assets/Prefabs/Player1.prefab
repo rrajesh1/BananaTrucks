@@ -132,6 +132,9 @@ MonoBehaviour:
   moveSpeed: 8
   rotationSpeed: 200
   playerNumber: 1
+  mask:
+    serializedVersion: 2
+    m_Bits: 0
   collisionPrefab: {fileID: 1696455591030756304, guid: 03fdd243c92a54b72a332b52fb201bca, type: 3}
   bananaPrefab: {fileID: 8291266271225295911, guid: dbebbf3314f774a90a5e6d75f1f01ae3, type: 3}
   spawnAreaMin: {x: -5, y: -5}
