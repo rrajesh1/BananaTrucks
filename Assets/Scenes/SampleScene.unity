@@ -377,6 +377,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player1
       objectReference: {fileID: 0}
+    - target: {fileID: 3514472864837075569, guid: 1ad8b85d846b74a6688618582a8e1999, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 7872843521513834506, guid: 1ad8b85d846b74a6688618582a8e1999, type: 3}
       propertyPath: moveSpeed
       value: 8
@@ -4784,6 +4788,10 @@ PrefabInstance:
     - target: {fileID: 4349529846698773949, guid: e7e91dd28913c4d378d5cb2d9004cd0a, type: 3}
       propertyPath: m_Name
       value: Player2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4349529846698773949, guid: e7e91dd28913c4d378d5cb2d9004cd0a, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 7050593378500396998, guid: e7e91dd28913c4d378d5cb2d9004cd0a, type: 3}
       propertyPath: moveSpeed

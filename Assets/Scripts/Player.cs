@@ -215,16 +215,65 @@ public class Player : MonoBehaviour
             collisionSound.Play();
         }
 
-        StartCoroutine(spawnPeel(collisionPosition, collisionPrefab));
+        //spawn the bananan peel immediately on collision
+        //benno suggested
+        SpawnBananaPeel(collisionPosition);
+
+        //StartCoroutine(spawnPeel(collisionPosition, collisionPrefab));
         Debug.Log("Cars collided! Banana peel spawned.");
     }
 
-    private IEnumerator spawnPeel(Vector3 position, GameObject collisionPrefab) 
+    /*private IEnumerator spawnPeel(Vector3 position, GameObject collisionPrefab) 
     {
         yield return new WaitForSeconds(2f);
         Instantiate(collisionPrefab, position, Quaternion.identity);
         collided = false;
     }
+    */
+
+    private void SpawnBananaPeel(Vector3 position)
+    {
+        // Instantiate the banana peel prefab at the collision position
+        GameObject bananaPeel = Instantiate(collisionPrefab, position, Quaternion.identity);
+
+        // Disable the banana peel's collider temporarily
+        Collider2D peelCollider = bananaPeel.GetComponent<Collider2D>();
+        if (peelCollider != null)
+        {
+            peelCollider.enabled = false; // Disable the collider
+        }
+
+        // Start a coroutine to enable the collider after a short delay
+        StartCoroutine(EnableBananaPeelCollider(peelCollider, bananaPeel));
+    }
+
+    private IEnumerator EnableBananaPeelCollider(Collider2D peelCollider, GameObject bananaPeel)
+    {
+        // Wait until the players are not overlapping
+        yield return new WaitForSeconds(3f); // Short delay for visual feedback
+
+        // Check if the peel is overlapping with players and wait if it is
+        while (IsOverlappingWithPlayers(bananaPeel))
+        {
+            yield return null; // Wait for the next frame
+        }
+
+        // Enable the collider to make the peel collectible
+        if (peelCollider != null)
+        {
+            peelCollider.enabled = true; // Enable the collider
+        }
+
+        // Optionally, you can add any spawn animation here
+    }
+
+    private bool IsOverlappingWithPlayers(GameObject peel)
+    {
+        // Check if the banana peel is overlapping with any player
+        Collider2D[] playerColliders = Physics2D.OverlapCircleAll(peel.transform.position, 0.1f, LayerMask.GetMask("Player"));
+        return playerColliders.Length > 0;
+    }
+
 
     // Spawn a new banana at a random position
     public void SpawnNewBanana()
