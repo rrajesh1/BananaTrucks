@@ -3,6 +3,7 @@ using System.Collections;
 
 public class Player : MonoBehaviour
 {
+    
     public float moveSpeed = 10f;
     public float rotationSpeed = 400f;
     public int playerNumber; // Change to int for easier comparison
@@ -16,6 +17,7 @@ public class Player : MonoBehaviour
 
     bool collided = false;
     private state playerState = state.driving;
+    Vector3 movementDiection;
 
     public GameObject collisionPrefab; // Banana peel prefab to spawn on collision
     public GameObject bananaPrefab;    // Banana prefab to spawn after pickup
@@ -33,6 +35,7 @@ public class Player : MonoBehaviour
     {
         myrb2d = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        movementDiection = transform.up;
 
         //engineSound = GetComponent<AudioSource>();
         AudioSource[] audioSources = GetComponents<AudioSource>();
@@ -64,7 +67,7 @@ public class Player : MonoBehaviour
         {
             // TODO add what the rigidbody change should be for spinning
             default:
-                myrb2d.linearVelocity = transform.up * moveSpeed;
+                myrb2d.linearVelocity = movementDiection * moveSpeed;
                 break;
 
         }
@@ -73,7 +76,6 @@ public class Player : MonoBehaviour
 
     private void HandleMovement()
     {
-        Vector3 dir = transform.up;
         float rotationInput;
         if (playerNumber == 1){
             rotationInput = -1*Input.GetAxis("Horizontal1");
@@ -86,8 +88,8 @@ public class Player : MonoBehaviour
 
         float angle = rotationInput * rotationSpeed * Time.deltaTime;
         Quaternion rotationQ = Quaternion.AngleAxis(angle, Vector3.forward);
-        dir = rotationQ * dir;
-        transform.up = dir;
+        movementDiection = rotationQ * movementDiection;
+        transform.up = movementDiection;
     }
 
     private void PlayEngineSound()
