@@ -15,7 +15,7 @@ public class Player : MonoBehaviour
         spinning = 1
     }
 
-    bool collided = false;
+    bool invulnerable = false;
     private state playerState = state.driving;
     Vector3 movementDiection;
 
@@ -24,6 +24,7 @@ public class Player : MonoBehaviour
     public Vector2 spawnAreaMin;       // Spawn area bounds for banana
     public Vector2 spawnAreaMax;
     public float pauseSecond = 3f;
+    public float spinningTimer = 10f;
 
     private SpriteRenderer spriteRenderer;
     private AudioSource engineSound;
@@ -65,8 +66,7 @@ public class Player : MonoBehaviour
         // Setting of the velocity (only setting the velocity right before the physics resolve collision-- not every frame)
         switch(playerState)
         {
-            // TODO add what the rigidbody change should be for spinning
-            default:
+            case state.driving:
                 myrb2d.linearVelocity = movementDiection * moveSpeed;
                 break;
 
@@ -114,17 +114,20 @@ public class Player : MonoBehaviour
 
     private void HandleSpin()
     {
-        float timer = 10f;
+        // float timer = 10f;
+        myrb2d.linearVelocity = Vector2.zero;
         Vector3 speed = new Vector3(0, 0, 50);
-        while (timer > 0f) {
+        if (spinningTimer > 0f) {
             Debug.Log("got here");
             transform.Rotate(speed*Time.deltaTime);
-            timer -= Time.deltaTime;
-            //Quaternion deltaRotation = Quaternion.Euler(speed * Time.fixedDeltaTime);
-            //myrb2d.MoveRotation(myrb2d.rotation + 50f*Time.deltaTime);
+            spinningTimer -= Time.deltaTime;
 
         }
-        playerState = state.driving;
+        else 
+        {
+            playerState = state.driving;
+        }
+        
     }
 
     void OnTriggerEnter2D(Collider2D collision)
@@ -147,13 +150,26 @@ public class Player : MonoBehaviour
         // Check if player collides with another player
         else if (collision.gameObject.CompareTag("Player"))
         {
-            if (collided != true)
-            {
-                HandleCarCollision(collision);
-            }
+            if (invulnerable) return;
+            
+            StartCoroutine(playerInvulnerable());
+            HandleCarCollision(collision);
         }
     }
 
+    IEnumerator playerInvulnerable()
+    {
+        invulnerable = true;
+        for(int i = 0; i < 6; i++)
+        {
+            spriteRenderer.enabled = !spriteRenderer.enabled;
+            yield return new WaitForSeconds(0.25f);
+
+        }
+        spriteRenderer.enabled = true;
+        // TODO make the cars blink
+        invulnerable = false;
+    }
     // Handle banana pickup, score update, and banana respawn
     void HandleBananaCollision(Collision2D collision)
     {
@@ -200,13 +216,15 @@ public class Player : MonoBehaviour
             ScoreManager.player2AddScore(-1);
             Destroy(collision.gameObject);
         }
+        playerState = state.spinning;
+        spinningTimer = 10f;
 
     }
 
     // Handle player-to-player collision (spawns banana peel or collision object)
     private void HandleCarCollision(Collision2D collision)
     {
-        collided = true;
+        // collided = true;
         Vector3 collisionPosition = collision.GetContact(0).point;
 
         //Play the collision sound
@@ -222,14 +240,6 @@ public class Player : MonoBehaviour
         //StartCoroutine(spawnPeel(collisionPosition, collisionPrefab));
         Debug.Log("Cars collided! Banana peel spawned.");
     }
-
-    /*private IEnumerator spawnPeel(Vector3 position, GameObject collisionPrefab) 
-    {
-        yield return new WaitForSeconds(2f);
-        Instantiate(collisionPrefab, position, Quaternion.identity);
-        collided = false;
-    }
-    */
 
     private void SpawnBananaPeel(Vector3 position)
     {
