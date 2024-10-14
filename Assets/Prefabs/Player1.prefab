@@ -140,6 +140,7 @@ MonoBehaviour:
   spawnAreaMin: {x: -5, y: -5}
   spawnAreaMax: {x: 5, y: 5}
   pauseSecond: 3
+  spinningTimer: 10
 --- !u!70 &3425076961039069132
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
