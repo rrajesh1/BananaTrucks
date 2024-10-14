@@ -3,7 +3,7 @@ using System.Collections;
 
 public class SpawnFence : MonoBehaviour
 {
-    // Minimum and maximum time intervals
+    // Minimum and maximum time intervals for when the fence will be spawned
     public float minTime = 1f;
     public float maxTime = 5f;
 
@@ -15,7 +15,7 @@ public class SpawnFence : MonoBehaviour
         objectRenderer = GetComponent<Renderer>();
         objectCollider = GetComponent<Collider2D>(); 
         
-        // Start the coroutine to handle random appearance
+        // Starting the coroutine that handles the random appearance of the fence
         StartCoroutine(ToggleAppearance());
     }
 
@@ -23,13 +23,10 @@ public class SpawnFence : MonoBehaviour
     {
         while (true)
         {
-            // Generate a random time interval
             float randomTime = Random.Range(minTime, maxTime);
-            
-            // Wait for that amount of time
             yield return new WaitForSeconds(randomTime);
             
-            // Toggle the GameObject's visibility and collision
+            // Toggling the fence's visibility and collider
             bool isVisible = !objectRenderer.enabled;
             objectRenderer.enabled = isVisible;
             objectCollider.enabled = isVisible;

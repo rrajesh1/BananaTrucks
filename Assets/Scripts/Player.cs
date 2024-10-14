@@ -6,7 +6,7 @@ public class Player : MonoBehaviour
     
     public float moveSpeed = 10f;
     public float rotationSpeed = 400f;
-    public int playerNumber; // Change to int for easier comparison
+    public int playerNumber; 
     Rigidbody2D myrb2d;
     public LayerMask mask;
 
@@ -19,12 +19,12 @@ public class Player : MonoBehaviour
     private state playerState = state.driving;
     Vector3 movementDiection;
 
-    public GameObject collisionPrefab; // Banana peel prefab to spawn on collision
-    public GameObject bananaPrefab;    // Banana prefab to spawn after pickup
-    public Vector2 spawnAreaMin;       // Spawn area bounds for banana
+    public GameObject collisionPrefab; 
+    public GameObject bananaPrefab;    
+    public Vector2 spawnAreaMin;       
     public Vector2 spawnAreaMax;
     public float pauseSecond = 3f;
-    public float spinningTimer = 10f;
+    public float spinningTimer = 2f;
 
     private SpriteRenderer spriteRenderer;
     private AudioSource engineSound;
@@ -38,10 +38,9 @@ public class Player : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         movementDiection = transform.up;
 
-        //engineSound = GetComponent<AudioSource>();
         AudioSource[] audioSources = GetComponents<AudioSource>();
-        engineSound = audioSources[0]; // Assume the first one is the engine sound
-        collisionSound = audioSources[1]; // The second one is the collision sound
+        engineSound = audioSources[0]; 
+        collisionSound = audioSources[1]; 
         bananaCollisionSound = audioSources[2];
         peeledbananaCollisionSound = audioSources[3];
 
@@ -58,6 +57,10 @@ public class Player : MonoBehaviour
             case state.driving:
                 HandleMovement();
                 break;      
+        }
+
+        if(Input.GetKeyDown(KeyCode.Escape)){
+            Application.Quit();
         }
     }
 
@@ -96,7 +99,6 @@ public class Player : MonoBehaviour
     {
         if (Input.GetAxis("Horizontal1") != 0 || Input.GetAxis("Horizontal2") != 0)
         {
-            // If the engine sound is not playing, start it
             if (!engineSound.isPlaying)
             {
                 engineSound.Play();
@@ -104,7 +106,6 @@ public class Player : MonoBehaviour
         }
         else
         {
-            // If no input is detected and the engine sound is still playing, stop it
             if (engineSound.isPlaying)
             {
                 engineSound.Stop();
@@ -114,9 +115,8 @@ public class Player : MonoBehaviour
 
     private void HandleSpin()
     {
-        // float timer = 10f;
         myrb2d.linearVelocity = Vector2.zero;
-        Vector3 speed = new Vector3(0, 0, 50);
+        Vector3 speed = new Vector3(0, 0, 800);
         if (spinningTimer > 0f) {
             Debug.Log("got here");
             transform.Rotate(speed*Time.deltaTime);
@@ -141,13 +141,11 @@ public class Player : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        // Check if player collides with a banana
         if (collision.gameObject.CompareTag("Banana"))
         {
             HandleBananaCollision(collision);
         }
 
-        // Check if player collides with another player
         else if (collision.gameObject.CompareTag("Player"))
         {
             if (invulnerable) return;
@@ -167,10 +165,9 @@ public class Player : MonoBehaviour
 
         }
         spriteRenderer.enabled = true;
-        // TODO make the cars blink
         invulnerable = false;
     }
-    // Handle banana pickup, score update, and banana respawn
+
     void HandleBananaCollision(Collision2D collision)
     {
         //play banana collision sound
@@ -179,20 +176,16 @@ public class Player : MonoBehaviour
             bananaCollisionSound.Play();
         }
 
-        // Check which player picked up the banana and update their score
         if (playerNumber == 1)
         {
-            ScoreManager.player1AddScore(1);  // Add score to player 1
+            ScoreManager.player1AddScore(1);
         }
         else if (playerNumber == 2)
         {
-            ScoreManager.player2AddScore(1);  // Add score to player 2
+            ScoreManager.player2AddScore(1); 
         }
 
-        //Destroy the collected banana
         Destroy(collision.gameObject);
-
-        // Spawn a new banana after the current one is collected
         SpawnNewBanana();
     }
 
@@ -217,14 +210,12 @@ public class Player : MonoBehaviour
             Destroy(collision.gameObject);
         }
         playerState = state.spinning;
-        spinningTimer = 10f;
+        spinningTimer = 2f;
 
     }
 
-    // Handle player-to-player collision (spawns banana peel or collision object)
     private void HandleCarCollision(Collision2D collision)
     {
-        // collided = true;
         Vector3 collisionPosition = collision.GetContact(0).point;
 
         //Play the collision sound
@@ -236,56 +227,42 @@ public class Player : MonoBehaviour
         //spawn the bananan peel immediately on collision
         //benno suggested
         SpawnBananaPeel(collisionPosition);
-
-        //StartCoroutine(spawnPeel(collisionPosition, collisionPrefab));
-        Debug.Log("Cars collided! Banana peel spawned.");
     }
 
     private void SpawnBananaPeel(Vector3 position)
     {
-        // Instantiate the banana peel prefab at the collision position
         GameObject bananaPeel = Instantiate(collisionPrefab, position, Quaternion.identity);
-
-        // Disable the banana peel's collider temporarily
         Collider2D peelCollider = bananaPeel.GetComponent<Collider2D>();
         if (peelCollider != null)
         {
             peelCollider.enabled = false; // Disable the collider
         }
-
-        // Start a coroutine to enable the collider after a short delay
         StartCoroutine(EnableBananaPeelCollider(peelCollider, bananaPeel));
     }
 
     private IEnumerator EnableBananaPeelCollider(Collider2D peelCollider, GameObject bananaPeel)
     {
-        // Wait until the players are not overlapping
-        yield return new WaitForSeconds(3f); // Short delay for visual feedback
-
-        // Check if the peel is overlapping with players and wait if it is
+        yield return new WaitForSeconds(3f); 
         while (IsOverlappingWithPlayers(bananaPeel))
         {
-            yield return null; // Wait for the next frame
+            yield return null; 
         }
 
-        // Enable the collider to make the peel collectible
         if (peelCollider != null)
         {
-            peelCollider.enabled = true; // Enable the collider
+            peelCollider.enabled = true; 
         }
-
-        // Optionally, you can add any spawn animation here
     }
 
     private bool IsOverlappingWithPlayers(GameObject peel)
     {
-        // Check if the banana peel is overlapping with any player
+        // Checking if the banana peel is overlapping with any player
         Collider2D[] playerColliders = Physics2D.OverlapCircleAll(peel.transform.position, 0.1f, LayerMask.GetMask("Player"));
         return playerColliders.Length > 0;
     }
 
 
-    // Spawn a new banana at a random position
+    // Spawning a new banana at a random position
     public void SpawnNewBanana()
     {
         Vector3 horizontalOffset = new Vector3(0, 0.1f, 0);
@@ -299,15 +276,11 @@ public class Player : MonoBehaviour
         float randomY = Random.Range(spawnAreaMin.y, spawnAreaMax.y);
         Vector2 randomPosition = new Vector2(randomX, randomY);
 
-        //Instantiate(bananaPrefab, randomPosition, Quaternion.identity);
-        //GameObject newBanana = Instantiate(bananaPrefab, randomPosition, Quaternion.identity);
-
         if (hit1.collider == null && hit2.collider == null)
         {
             GameObject newBanana = Instantiate(bananaPrefab, randomPosition, Quaternion.identity);
             newBanana.SetActive(true);
         }
-          // Ensure the new banana is active
         Debug.Log("New banana spawned at: " + randomPosition);
     }
 }

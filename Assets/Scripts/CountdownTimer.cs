@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class CountdownTimer : MonoBehaviour
 {
-    public int timer = 10;  // Countdown starting time in seconds
-    public TMP_Text timer_text;  // Reference to the TextMeshProUGUI text component
+    public int timer = 10;  
+    public TMP_Text timer_text;  
     public GameObject player1_win_text;
     public GameObject player2_win_text;
     public GameObject tie_text;
@@ -14,26 +14,22 @@ public class CountdownTimer : MonoBehaviour
 
     private void Start()
     {
-        // Start the countdown coroutine
         StartCoroutine(CountdownCoroutine());
     }
 
-    // Coroutine to handle the countdown logic
     IEnumerator CountdownCoroutine()
     {
         while (timer > 0)
         {
-            // Update the UI each second
+            // Waiting for 1 second
             UpdateUI();
-
-            // Wait for 1 second
             yield return new WaitForSeconds(1f);
 
             // Decrease the timer by 1
             timer--;
         }
 
-        // Ensure the timer hits 0 and updates the UI when the countdown is finished
+        // Timer is 0 when countdown ends then UI update
         timer = 0;
         UpdateUI();
 
@@ -45,6 +41,7 @@ public class CountdownTimer : MonoBehaviour
             Instantiate(player1_win_text, new Vector3(0, 0, 0), Quaternion.identity);
             winSound.Play();
             Debug.Log("Player 1 won!");
+            
         }
         else if (player1Score < player2Score)
         {
@@ -60,10 +57,9 @@ public class CountdownTimer : MonoBehaviour
         }
 
         Debug.Log("Timer has finished!");
-        // Optional: Trigger any event when the timer ends
     }
 
-    // Method to update the UI text
+    // Updating the UI text
     private void UpdateUI()
     {
         timer_text.text = timer.ToString();
